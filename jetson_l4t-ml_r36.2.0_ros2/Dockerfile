@@ -1,4 +1,4 @@
-FROM dustynv/ros:humble-desktop-l4t-r35.4.1
+FROM nvcr.io/nvidia/l4t-ml:r36.2.0-py3
 ############################## SYSTEM PARAMETERS ##############################
 # * Arguments
 ARG USER=initial
@@ -25,13 +25,16 @@ RUN groupadd --gid "${GID}" "${GROUP}" \
 
 # * Replace apt urls
 # ? Change to tku
-RUN sed -i 's@archive.ubuntu.com@ftp.tku.edu.tw@g' /etc/apt/sources.list
+# RUN sed -i 's@archive.ubuntu.com@ftp.tku.edu.tw@g' /etc/apt/sources.list
 # ? Change to Taiwan
-# RUN sed -i 's@archive.ubuntu.com@tw.archive.ubuntu.com@g' /etc/apt/sources.list
+RUN sed -i 's@archive.ubuntu.com@tw.archive.ubuntu.com@g' /etc/apt/sources.list
 
 # * Time zone
+RUN apt update && apt install -y tzdata
 ENV TZ=Asia/Taipei
 RUN ln -snf /usr/share/zoneinfo/"${TZ}" /etc/localtime && echo "${TZ}" > /etc/timezone
+# RUN DEBIAN_FRONTEND=noninteractive TZ=Asia/Taipei apt-get -y install tzdata
+# RUN apt install tzdata -y
 
 # * Copy custom configuration
 # ? Requires docker version >= 17.09
@@ -67,11 +70,24 @@ RUN apt update \
         xvfb \
         ffmpeg \ 
         freeglut3-dev \
+        # camera 
+        qv4l2 \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
+# install ROS2 humble
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt purge -y '*opencv*'
+RUN add-apt-repository universe \
+    && apt update \
+    && curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null \
+    && apt update \
+    && DEBIAN_FRONTEND=noninteractive apt install -y ros-humble-desktop \
+    && apt install -y ros-humble-rmw-cyclonedds-cpp \
+    && apt install -y python3-colcon-common-extensions
+
 RUN ./config/pip/pip_setup.sh
-RUN pip3 install opencv-python
 
 ############################## USER CONFIG ####################################
 # * Switch user to ${USER}
@@ -83,7 +99,7 @@ RUN ./config/shell/bash_setup.sh "${USER}" "${GROUP}" \
     && sudo rm -rf /config
 RUN export CXX=g++
 RUN export MAKEFLAGS="-j nproc"
-RUN echo "source /opt/ros/humble/install/setup.bash" >> ~/.bashrc
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
 
 
