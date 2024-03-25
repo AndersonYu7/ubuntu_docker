@@ -2,7 +2,7 @@
 tf
 dynamixel_sdk
 pynput
-setuptools==58.2
+setuptools==65.0.1
 opencv-python
 # install some pip packages needed for testing
 # argcomplete 
