@@ -2,8 +2,8 @@
 tf
 dynamixel_sdk
 pynput
-setuptools==65.0.1
-opencv-python==4.5.5.64
+setuptools
+opencv-python==3.4.18.65
 # install some pip packages needed for testing
 # argcomplete 
 # flake8-blind-except 
