@@ -4,6 +4,7 @@
 source "$(dirname "$(readlink -f "${0}")")/get_param.sh"
 
 docker run --rm \
+    --runtime nvidia \
     --privileged \
     --network=host \
     --ipc=host \

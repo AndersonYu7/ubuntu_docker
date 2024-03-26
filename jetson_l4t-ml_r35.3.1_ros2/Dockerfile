@@ -1,4 +1,5 @@
-FROM nvcr.io/nvidia/l4t-ml:r36.2.0-py3
+# FROM nvcr.io/nvidia/l4t-ml:r36.2.0-py3
+FROM dustynv/ros:humble-desktop-l4t-r35.3.1
 ############################## SYSTEM PARAMETERS ##############################
 # * Arguments
 ARG USER=initial
@@ -75,18 +76,6 @@ RUN apt update \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
-# install ROS2 humble
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && apt purge -y '*opencv*'
-RUN add-apt-repository universe \
-    && apt update \
-    && curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg \
-    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null \
-    && apt update \
-    && DEBIAN_FRONTEND=noninteractive apt install -y ros-humble-desktop \
-    && apt install -y ros-humble-rmw-cyclonedds-cpp \
-    && apt install -y python3-colcon-common-extensions
-
 RUN ./config/pip/pip_setup.sh
 
 ############################## USER CONFIG ####################################
@@ -99,7 +88,7 @@ RUN ./config/shell/bash_setup.sh "${USER}" "${GROUP}" \
     && sudo rm -rf /config
 RUN export CXX=g++
 RUN export MAKEFLAGS="-j nproc"
-RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+RUN echo "source /opt/ros/humble/install/setup.bash" >> ~/.bashrc
 RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
 
 
