@@ -4,7 +4,6 @@
 source "$(dirname "$(readlink -f "${0}")")/get_param.sh"
 
 docker run --rm \
-    --runtime nvidia \
     --privileged \
     --network=host \
     --ipc=host \
@@ -20,4 +19,5 @@ docker run --rm \
     -it --name "${CONTAINER}" "${DOCKER_HUB_USER}"/"${IMAGE}"
 
 # ${GPU_FLAG} \
+# --runtime nvidia \
 

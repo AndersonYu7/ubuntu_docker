@@ -7,7 +7,7 @@ ARG GROUP=initial
 ARG UID=1000
 ARG GID="${UID}"
 ARG SHELL=/bin/bash
-ARG HARDWARE=x86_64
+ARG HARDWARE=arm64
 ARG ENTRYPOINT_FILE=entrypint.sh
 
 # * Env vars for the nvidia-container-runtime.
@@ -31,7 +31,7 @@ RUN groupadd --gid "${GID}" "${GROUP}" \
 RUN sed -i 's@archive.ubuntu.com@tw.archive.ubuntu.com@g' /etc/apt/sources.list
 
 # * Time zone
-RUN apt update && apt install -y tzdata
+# RUN apt update && apt install -y tzdata
 ENV TZ=Asia/Taipei
 RUN ln -snf /usr/share/zoneinfo/"${TZ}" /etc/localtime && echo "${TZ}" > /etc/timezone
 # RUN DEBIAN_FRONTEND=noninteractive TZ=Asia/Taipei apt-get -y install tzdata
