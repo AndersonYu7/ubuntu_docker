@@ -123,6 +123,7 @@ RUN export CXX=g++
 RUN export MAKEFLAGS="-j nproc"
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
+RUN echo "set-option -g mouse on" >  ~/.tmux.conf
 
 
 # * Switch workspace to ~/work
